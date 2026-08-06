@@ -7,8 +7,11 @@
 公開バージョンは Git タグから決まります。`package.json` や `pyproject.toml` の
 バージョンはプレースホルダであり、手動で更新しません。
 
+パッケージごとにタグの接頭辞が異なります。
+
 ```bash
-git tag v0.2.0 && git push origin v0.2.0
+git tag validate-v0.1.0 && git push origin validate-v0.1.0   # バリデータのみ
+git tag client-v0.1.0   && git push origin client-v0.1.0     # クライアントのみ
 ```
 
 CI がタグからバージョンを読み取り、各パッケージに書き込んでから公開します。
@@ -16,11 +19,11 @@ CI がタグからバージョンを読み取り、各パッケージに書き�
 最後の段階で「そのバージョンは既に存在します」として現れます。タグは一度しか
 存在できないため、この衝突は起こり得なくなります。
 
-### 同一リポジトリのパッケージは同じバージョンで公開されます
+### パッケージは独立してリリースされます
 
-`daichodo` と `daichodo-validate` は常に同じバージョンで公開されます。片方に
-変更がなくてもバージョンは上がります。リリース状態を一つのタグで表せる利点が、
-不要なバージョン更新のわずかな無駄を上回ります。
+バリデータは単体で有用ですが、クライアントは API の稼働が前提です。両者を同時に
+公開すると、動作しないクライアントがレジストリに残ります。npm も PyPI も
+バージョン番号の再利用を認めないため、この誤りは取り消せません。
 
 ### SDK のバージョンは API のバージョンと連動しません
 
@@ -37,8 +40,11 @@ SDK はクライアントです。メジャーバージョンが上がるのは 
 Published versions come from the Git tag. The versions in `package.json` and
 `pyproject.toml` are placeholders and are never bumped by hand.
 
+Each package has its own tag prefix:
+
 ```bash
-git tag v0.2.0 && git push origin v0.2.0
+git tag validate-v0.1.0 && git push origin validate-v0.1.0   # validator only
+git tag client-v0.1.0   && git push origin client-v0.1.0     # client only
 ```
 
 CI reads the version from the tag, writes it into each manifest, then publishes.
@@ -52,11 +58,14 @@ It matters more for the Python packages, where the generated client's version
 comes from `generator-config.yml` — a hand-edited `pyproject.toml` would be
 overwritten on the next schema change.
 
-### Packages in one repo share a version
+### Packages release independently
 
-`daichodo` and `daichodo-validate` always publish together at the same version,
-even when only one of them changed. One tag describing one released state is
-worth more than avoiding the occasional no-op version bump.
+The validator is useful on its own; the client is only useful once the API is
+deployed. Publishing them together would leave a client on the registry that
+cannot work — and neither npm nor PyPI allows a version number to be reused, so
+that mistake cannot be undone.
+
+Their version numbers are therefore unrelated to each other.
 
 ### SDK versions are independent of the API version
 
