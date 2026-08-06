@@ -34,7 +34,14 @@ jobs:
       - name: Upgrade npm
         # Trusted publishing needs npm >=11.5.1. Node 22 still bundles npm 10,
         # so the runner's default is too old however new the Node pin is.
-        run: npm install -g npm@latest
+        #
+        # Pinned to a major rather than `latest`: a release pipeline should not
+        # change behaviour because a new npm shipped overnight. npm 11 also
+        # installs strictly what package-lock.json lists, where npm 10 would
+        # quietly fetch a missing platform binary - so the lockfile must carry
+        # every @esbuild/* platform, not just the one from the machine that
+        # generated it. Regenerate with a full `npm install`, never by hand.
+        run: npm install -g npm@11
 
       - name: Work out what is being released
         id: target
