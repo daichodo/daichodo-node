@@ -19,7 +19,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write   # npm provenance
+  id-token: write   # trusted publishing (OIDC), and the provenance it implies
 
 jobs:
   publish:
@@ -28,8 +28,13 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'   # >=22.14 is the floor for npm trusted publishing
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm
+        # Trusted publishing needs npm >=11.5.1. Node 22 still bundles npm 10,
+        # so the runner's default is too old however new the Node pin is.
+        run: npm install -g npm@latest
 
       - name: Work out what is being released
         id: target
@@ -63,19 +68,19 @@ jobs:
           npm run --workspaces --if-present test
 
       - name: Publish
-        # NPM_TOKEN must be a granular token with **Bypass 2FA** enabled.
-        # npm removed classic (automation) tokens in November 2025, and a
-        # granular token has Bypass 2FA off by default - without it a CI publish
-        # fails with EOTP, asking for an authenticator code no runner can supply.
+        # Trusted publishing (OIDC): no NPM_TOKEN. npm mints a short-lived,
+        # workflow-scoped credential, so there is no long-lived secret to leak
+        # and no 2FA prompt to work around. Configure the publisher per package
+        # at npmjs.com -> package -> Trusted Publisher:
         #
-        # Worth migrating to trusted publishing (OIDC) once both packages exist
-        # on the registry: it removes the token entirely, as PyPI already does
-        # here. That needs npm >=11.5.1, which is why Node is pinned to 22.
+        #   organization: daichodo | repository: daichodo-node | workflow: publish.yml
         #
-        # Provenance ties the tarball to the workflow run and commit that built
-        # it, which makes "this is generated from the schema" verifiable rather
-        # than merely claimed.
+        # Unlike PyPI there is no pending-publisher form, so the package must
+        # already exist on the registry before its publisher can be configured.
+        # Both were bootstrapped with a placeholder published by hand; every
+        # release since has come through here.
+        #
+        # --provenance is deliberately absent: trusted publishing attaches
+        # provenance attestations on its own, and the flag is now redundant.
         working-directory: ${{ steps.target.outputs.dir }}
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
