@@ -1,0 +1,9 @@
+{
+  "name": "daichodo-node",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.64.0",
+    "typescript": "~5.9.3"
+  }
+}

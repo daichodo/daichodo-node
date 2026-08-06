@@ -1,0 +1,23 @@
+{
+  "name": "@daichodo/validate",
+  "version": "0.1.0",
+  "description": "Validate Japanese corporate numbers (法人番号) and qualified invoice registration numbers (登録番号). Zero dependencies, no network.",
+  "keywords": ["法人番号", "適格請求書", "インボイス", "登録番号", "japan", "corporate-number", "invoice", "validation"],
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "repository": { "type": "git", "url": "git+https://github.com/daichodo/daichodo-node.git", "directory": "packages/validate" },
+  "homepage": "https://daichodo.com",
+  "bugs": "https://github.com/daichodo/daichodo-node/issues",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "tsx --test test/*.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": { "tsx": "^4.19.0", "typescript": "~5.9.3" }
+}

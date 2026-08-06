@@ -1,0 +1,32 @@
+name: publish
+
+# Publishes to npm on a version tag. Generated code arrives here by push from
+# the private repo (see its sdk.yml); this workflow only releases it.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write   # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run --workspaces --if-present build
+      - run: npm run --workspaces --if-present test
+      - name: Publish
+        # Provenance links each published tarball to the workflow run and commit
+        # that produced it, which is what makes "this is generated" verifiable
+        # rather than merely claimed.
+        run: npm publish --workspaces --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
