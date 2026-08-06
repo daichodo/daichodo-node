@@ -1,14 +1,9 @@
-# daichodo-node
+# @daichodo/validate
 
-TypeScript packages for [Daichodo](https://daichodo.com) — Japanese qualified
-invoice issuer (適格請求書発行事業者) and corporate number (法人番号) data.
+法人番号と適格請求書発行事業者の登録番号を検証します。依存関係なし、通信なし、APIキー不要。
 
-| Package | What it is | Needs an API key |
-| --- | --- | --- |
-| [`@daichodo/validate`](packages/validate) | Format and check-digit validation. Zero dependencies, no network. | No |
-| [`daichodo`](packages/daichodo) | Client for the Daichodo API. | Yes |
-
-## Validate without signing up for anything
+Validate Japanese corporate numbers (法人番号) and qualified invoice
+registration numbers (登録番号). Zero dependencies, no network, no API key.
 
 ```bash
 npm install @daichodo/validate
@@ -21,77 +16,47 @@ validateRegistrationNumber('T1010001153225');
 // { value: 'T1010001153225', valid: true, corporateNumber: '1010001153225' }
 ```
 
-The check-digit rules come from the National Tax Agency's published
-specification, so this needs no service behind it. It tells you whether a number
-is **well-formed** — not whether it is **registered**. For that you need a
-lookup.
+## 日本語
 
-### Sole traders have no check digit
+検査用数字の計算式は国税庁が公表している仕様に基づくため、サービスへの接続は不要です。
 
-Registration numbers for sole traders (個人事業主) are not derived from a
-法人番号, so there is nothing to verify beyond the format:
+判定できるのは**形式として正しいか**であり、**実際に登録されているか**ではありません。
+登録の有無や有効期間を確認するには [daichodo.com](https://daichodo.com) の API を
+ご利用ください。
+
+### 個人事業主の登録番号に検査用数字はありません
+
+個人事業主の登録番号は法人番号から導出されないため、形式以外に検証できる要素が
+ありません。
 
 ```ts
 validateRegistrationNumber('T1234567890123');
-// { value: 'T1234567890123', valid: true, reason: 'not derived from a 法人番号' }
+// { valid: true, reason: 'not derived from a 法人番号' }
 ```
 
-These are **valid**. Roughly half the register is sole traders, so treating them
-as invalid would reject half of everything you look at.
+これらは**有効**です。登録簿の約半数は個人事業主であるため、無効として扱うと確認対象の
+半分を誤って弾くことになります。
 
-## Look up the register
+## English
 
-```bash
-npm install daichodo
-```
+The check-digit rules come from the National Tax Agency's published
+specification, so this needs no service behind it.
 
-```ts
-import { createClient } from '@hey-api/client-fetch';
-import { getInvoiceIssuer } from 'daichodo';
+It tells you whether a number is **well-formed** — not whether it is
+**registered**. For registration status and validity dates you need the API at
+[daichodo.com](https://daichodo.com).
 
-createClient({
-  baseUrl: 'https://api.daichodo.com',
-  headers: { Authorization: `Bearer ${process.env.DAICHODO_API_KEY}` },
-});
+### Sole traders have no check digit
 
-const { data } = await getInvoiceIssuer({
-  path: { registration_number: 'T1010001153225' },
-});
-```
+Registration numbers for sole traders are not derived from a 法人番号, so there
+is nothing to verify beyond the format. They are **valid**. Roughly half the
+register is sole traders, so treating them as invalid would reject half of
+everything you look at.
 
-### `name` is null for sole traders, and that is not an error
-
-The NTA strips identity fields for individuals at source. A sole trader returns
-their registration and validity dates with **no name**:
-
-```ts
-// { registration_number: 'T…', kind: 'individual', name: null,
-//   registration_date: '2023-10-01', … }
-```
-
-The record exists and its dates are authoritative. Treating `name === null` as
-"not found" is the most common way to get this wrong, and it silently discards
-about half the register.
-
-## Test mode
-
-Keys beginning `dc_test_` read a frozen dataset that never changes, so your
-integration tests do not break when the registry moves. It includes an active
-corporation, a sole trader with no name, a lapsed registration, a revoked one,
-and a company whose name the NTA could not represent.
-
-## This code is generated
-
-`packages/daichodo` is generated from the API's OpenAPI schema and pushed here
-automatically. **Do not send pull requests against it** — they will be
-overwritten on the next release. Open an issue instead, or send a pull request
-against `packages/validate`, which is hand-written.
-
-## Licence
+## ライセンス / Licence
 
 MIT.
 
 ---
 
-出典：国税庁適格請求書発行事業者公表サイト（国税庁）（https://www.invoice-kohyo.nta.go.jp/）を加工して作成
 出典：国税庁法人番号公表サイト（国税庁）（https://www.houjin-bangou.nta.go.jp/）を加工して作成
