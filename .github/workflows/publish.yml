@@ -29,7 +29,13 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          # registry-url is deliberately omitted. It makes setup-node write an
+          # .npmrc containing `_authToken=${NODE_AUTH_TOKEN}`, and with no token
+          # supplied it sets that variable to the literal placeholder
+          # `XXXXX-XXXXX-XXXXX-XXXXX`. npm then sees configured credentials,
+          # never attempts the OIDC exchange, and the registry rejects the
+          # placeholder as a 404 that reads like a missing package. npmjs.org is
+          # the default registry anyway, so nothing is lost by leaving it out.
 
       - name: Upgrade npm
         # Trusted publishing needs npm >=11.5.1. Node 22 still bundles npm 10,
