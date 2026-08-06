@@ -96,4 +96,4 @@ jobs:
         # --provenance is deliberately absent: trusted publishing attaches
         # provenance attestations on its own, and the flag is now redundant.
         working-directory: ${{ steps.target.outputs.dir }}
-        run: npm publish --access public
+        run: npm publish --access public --loglevel verbose
