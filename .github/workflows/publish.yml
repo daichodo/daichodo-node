@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'   # >=22.14 is the floor for npm trusted publishing
           registry-url: 'https://registry.npmjs.org'
 
       - name: Work out what is being released
@@ -63,6 +63,15 @@ jobs:
           npm run --workspaces --if-present test
 
       - name: Publish
+        # NPM_TOKEN must be a granular token with **Bypass 2FA** enabled.
+        # npm removed classic (automation) tokens in November 2025, and a
+        # granular token has Bypass 2FA off by default - without it a CI publish
+        # fails with EOTP, asking for an authenticator code no runner can supply.
+        #
+        # Worth migrating to trusted publishing (OIDC) once both packages exist
+        # on the registry: it removes the token entirely, as PyPI already does
+        # here. That needs npm >=11.5.1, which is why Node is pinned to 22.
+        #
         # Provenance ties the tarball to the workflow run and commit that built
         # it, which makes "this is generated from the schema" verifiable rather
         # than merely claimed.
