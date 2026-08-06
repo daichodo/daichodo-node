@@ -1,0 +1,34 @@
+name: no hand edits
+
+# Generated code is overwritten on every schema change. A pull request against
+# it would be silently discarded on the next release, so this fails loudly
+# instead of letting someone waste their time.
+#
+# The README says the same thing, but a README is a convention and this is a
+# gate.
+
+on:
+  pull_request:
+    paths:
+      - 'packages/daichodo/src/**'
+
+permissions:
+  contents: read
+
+jobs:
+  reject:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          cat <<'MSG'
+          This pull request modifies packages/daichodo/src, which is generated
+          from the Daichodo API's OpenAPI schema and regenerated on every
+          release. Any change here is overwritten and lost.
+
+          If the generated client is wrong, the fix belongs upstream in the API
+          schema - please open an issue describing what is wrong and it will be
+          fixed at the source.
+
+          packages/validate is hand-written and pull requests there are welcome.
+          MSG
+          exit 1
