@@ -21,6 +21,20 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
+
+      - name: Take the version from the tag
+        # The tag is the single source of truth for the version. Manifests stay
+        # at a placeholder and are never hand-bumped: forgetting to bump is the
+        # most common release failure, and it surfaces as a duplicate-version
+        # rejection at the very end, after build and tests have passed.
+        #
+        # A git tag can only exist once, so a collision becomes impossible
+        # rather than merely unlikely.
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Publishing $VERSION"
+          npm version "$VERSION" --workspaces --no-git-tag-version --allow-same-version
+
       - run: npm run --workspaces --if-present build
       - run: npm run --workspaces --if-present test
       - name: Publish
