@@ -1,11 +1,11 @@
 {
   "name": "daichodo",
   "version": "0.1.0",
-  "description": "Official TypeScript client for the Daichodo API: Japanese qualified invoice issuer (\u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005) and corporate number (\u6cd5\u4eba\u756a\u53f7) lookup, validation, and change detection.",
+  "description": "Official TypeScript client for the Daichodo API: Japanese qualified invoice issuer (適格請求書発行事業者) and corporate number (法人番号) lookup, validation, and change detection.",
   "keywords": [
-    "\u6cd5\u4eba\u756a\u53f7",
-    "\u9069\u683c\u8acb\u6c42\u66f8",
-    "\u30a4\u30f3\u30dc\u30a4\u30b9",
+    "法人番号",
+    "適格請求書",
+    "インボイス",
     "japan",
     "compliance",
     "api",
@@ -13,12 +13,13 @@
   ],
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -35,13 +36,15 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsup",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "tsup": "^8.5.0"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.10.0"
-  }
+  },
+  "module": "./dist/index.js"
 }
