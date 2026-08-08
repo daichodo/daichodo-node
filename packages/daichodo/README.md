@@ -29,17 +29,15 @@ npm install daichodo
 ```
 
 ```ts
-import { createClient } from '@hey-api/client-fetch';
 import { getInvoiceIssuer } from 'daichodo';
 
-createClient({
-  baseUrl: 'https://api.daichodo.com',
-  headers: { Authorization: `Bearer ${process.env.DAICHODO_API_KEY}` },
-});
-
-const { data } = await getInvoiceIssuer({
+const { data, error } = await getInvoiceIssuer({
+  auth: () => process.env.DAICHODO_API_KEY,
   path: { registration_number: 'T1010001153225' },
 });
+
+if (error) throw new Error(error.message);
+console.log(data.name);
 ```
 
 ## `name` が null でもエラーではありません / `name` is null for sole traders
