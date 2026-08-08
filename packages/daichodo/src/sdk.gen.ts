@@ -51,6 +51,12 @@ export const validate = <ThrowOnError extends boolean = false>(options: Options<
  */
 export const getInvoiceIssuer = <ThrowOnError extends boolean = false>(options: Options<GetInvoiceIssuerData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetInvoiceIssuerResponse, GetInvoiceIssuerError, ThrowOnError>({
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            }
+        ],
         url: '/v1/invoice-issuers/{registration_number}',
         ...options
     });
@@ -64,6 +70,12 @@ export const getInvoiceIssuer = <ThrowOnError extends boolean = false>(options: 
  */
 export const getValidity = <ThrowOnError extends boolean = false>(options: Options<GetValidityData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetValidityResponse, GetValidityError, ThrowOnError>({
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            }
+        ],
         url: '/v1/invoice-issuers/{registration_number}/validity',
         ...options
     });
@@ -75,6 +87,12 @@ export const getValidity = <ThrowOnError extends boolean = false>(options: Optio
  */
 export const getCorporation = <ThrowOnError extends boolean = false>(options: Options<GetCorporationData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetCorporationResponse, GetCorporationError, ThrowOnError>({
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            }
+        ],
         url: '/v1/corporations/{corporate_number}',
         ...options
     });
