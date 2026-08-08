@@ -238,5 +238,5 @@ export type GetCorporationResponses = {
 export type GetCorporationResponse = GetCorporationResponses[keyof GetCorporationResponses];
 
 export type ClientOptions = {
-    baseUrl: `${string}://${string}` | (string & {});
+    baseUrl: 'https://api.daichodo.com' | (string & {});
 };
