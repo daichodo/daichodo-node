@@ -65,6 +65,29 @@ export type InvoiceIssuer = {
     trade_name?: string | null;
 };
 
+export type Me = {
+    /**
+     * `free`, `standard`, or `premium`
+     */
+    plan: string;
+    /**
+     * `live` or `test`. A `test` key reads a frozen fixture dataset, not the live registry - see docs/authentication.
+     */
+    mode: string;
+    /**
+     * Billable lookups in the current UTC month
+     */
+    lookups_this_month: number;
+    /**
+     * Monthly allowance. Null means unmetered.
+     */
+    included_lookups?: number | null;
+    /**
+     * Gated capabilities this plan includes, by name.
+     */
+    capabilities: Array<string>;
+};
+
 export type ValidateRequest = {
     /**
      * Registration numbers (T + 13 digits) or corporate numbers (13 digits). Separators and whitespace are stripped.
@@ -125,6 +148,22 @@ export type HealthResponses = {
 };
 
 export type HealthResponse = HealthResponses[keyof HealthResponses];
+
+export type GetMeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/me';
+};
+
+export type GetMeResponses = {
+    /**
+     * Successful Response
+     */
+    200: Me;
+};
+
+export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
 
 export type ValidateData = {
     body: ValidateRequest;
