@@ -11,6 +11,11 @@ invoice issuer (適格請求書発行事業者) and corporate number (法人番�
 | [`@daichodo/validate`](packages/validate) | 形式・検査用数字の検証。依存関係なし、通信なし。<br>Format and check-digit validation. Zero dependencies, no network. | 不要 / No |
 | [`daichodo`](packages/daichodo) | Daichodo API クライアント。<br>Client for the Daichodo API. | 必要 / Yes |
 
+AIエージェントから使う場合は、パッケージを入れずに
+[MCP サーバー](https://daichodo.com/ja/docs/mcp/)を利用できます。<br>
+Driving this from an AI agent? There is an
+[MCP server](https://daichodo.com/en/docs/mcp/) — no package to install.
+
 ---
 
 ## 日本語
@@ -78,6 +83,30 @@ const { data } = await getInvoiceIssuer({
 インテグレーションテストが壊れることはありません。有効な法人、氏名のない個人事業主、
 失効した登録、取消された登録、外字を含む法人が含まれます。
 
+### エージェントから使う（MCP サーバー）
+
+Claude・ChatGPT・IDE のエージェントから、クライアントを書かずに登録簿を照会できます。
+このパッケージと同じAPIキーを使います。
+
+```json
+{
+  "mcpServers": {
+    "daichodo": {
+      "url": "https://mcp.daichodo.com/mcp",
+      "headers": { "Authorization": "Bearer dc_live_..." }
+    }
+  }
+}
+```
+
+登録番号の照会、法人番号の照会、最大 100 件の一括形式検証に対応しています。
+指定日時点の有効性判定は Standard プラン以上です。
+
+上記の「`name` が null」の扱いも同様で、氏名が非公表の登録は `name_withheld: true`
+として明示的に返るため、「該当なし」と誤解されません。
+
+詳細は [MCP サーバーのドキュメント](https://daichodo.com/ja/docs/mcp/) を参照してください。
+
 ---
 
 ## English
@@ -113,7 +142,7 @@ validateRegistrationNumber('T1234567890123');
 These are **valid**. Roughly half the register is sole traders, so treating them
 as invalid would reject half of everything you look at.
 
-## Look up the register
+### Look up the register
 
 ```bash
 npm install daichodo
@@ -147,12 +176,37 @@ The record exists and its dates are authoritative. Treating `name === null` as
 "not found" is the most common way to get this wrong, and it silently discards
 about half the register.
 
-## Test mode
+### Test mode
 
 Keys beginning `dc_test_` read a frozen dataset that never changes, so your
 integration tests do not break when the registry moves. It includes an active
 corporation, a sole trader with no name, a lapsed registration, a revoked one,
 and a company whose name the NTA could not represent.
+
+### Use it from an agent (MCP server)
+
+Query the register from Claude, ChatGPT, or an IDE agent without writing a
+client. It takes the same API key as this package.
+
+```json
+{
+  "mcpServers": {
+    "daichodo": {
+      "url": "https://mcp.daichodo.com/mcp",
+      "headers": { "Authorization": "Bearer dc_live_..." }
+    }
+  }
+}
+```
+
+It covers registration lookup, corporate number lookup, and format-checking up
+to 100 numbers in one call. Point-in-time validity needs the Standard plan.
+
+The null-name rule above applies there too, made explicit: a registration whose
+name is unpublished comes back as `name_withheld: true`, so an agent cannot read
+it as "not found".
+
+See the [MCP documentation](https://daichodo.com/en/docs/mcp/).
 
 ---
 
