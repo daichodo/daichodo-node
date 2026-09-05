@@ -116,7 +116,7 @@ export type ValidationItem = {
      */
     reason?: string | null;
     /**
-     * The 13-digit 法人番号 this number corresponds to, when it has one. Null for sole traders, whose registration numbers are not derived from a corporate number.
+     * The 13-digit body of a valid registration number. For a corporation this IS its 法人番号. For a sole trader it is not, and it will not be found in the corporate register - but it is still returned, because both kinds satisfy the same check digit and the number alone cannot tell you which you are holding. Only a lookup can. Null only when the number is invalid, or when a bare 13-digit corporate number was supplied rather than a T-prefixed one.
      */
     corporate_number?: string | null;
 };
