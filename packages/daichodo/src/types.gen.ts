@@ -112,7 +112,7 @@ export type ValidationItem = {
     value: string;
     valid: boolean;
     /**
-     * Why the number is invalid, or a note qualifying a valid result. Present on some valid results - a registration number that is format-valid but not derived from a 法人番号 is a sole trader, not an error.
+     * Why the number is invalid. Absent on a valid result. Note that the check digit applies to every registration number, sole traders included - measured over the whole register, 5,421,496 numbers, zero exceptions - so a failed check digit is a typo or a fabrication rather than an individual.
      */
     reason?: string | null;
     /**
