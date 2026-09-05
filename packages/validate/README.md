@@ -24,18 +24,26 @@ validateRegistrationNumber('T1010001153225');
 登録の有無や有効期間を確認するには [daichodo.com](https://daichodo.com) の API を
 ご利用ください。
 
-### 個人事業主の登録番号に検査用数字はありません
+### チェックディジットは個人事業主にも適用されます
 
-個人事業主の登録番号は法人番号から導出されないため、形式以外に検証できる要素が
-ありません。
+**チェックディジットは個人事業主の登録番号にも適用されます。** 2026年9月5日に
+実測して修正しました。全件データ（2026年8月31日）と直近の差分、あわせて
+5,421,496件を検証した結果、法人・個人事業主・人格のない社団等のすべてが
+チェックディジットを満たしました。例外はゼロ件です。
 
 ```ts
 validateRegistrationNumber('T1234567890123');
-// { valid: true, reason: 'not derived from a 法人番号' }
+// { valid: false, reason: 'check digit is 1, expected 9' }
 ```
 
-これらは**有効**です。登録簿の約半数は個人事業主であるため、無効として扱うと確認対象の
-半分を誤って弾くことになります。
+個人事業主の13桁は法人番号ではありません（抽出した5万件のうち、法人番号登録簿に
+存在したものはゼロ件）。しかし採番規則は同じで、チェックディジットは同様に成立します。
+つまり**番号だけでは法人か個人事業主かを判別できません**。判別できるのは登録簿の
+照会のみです。
+
+以前のバージョンはチェックディジットが合わない番号を「個人事業主だから」として
+有効扱いにしていました。実在する番号はすべてチェックディジットを満たすため、この
+扱いは打ち間違いや架空の番号をすべて通してしまうものでした。
 
 ## English
 
@@ -46,12 +54,26 @@ It tells you whether a number is **well-formed** — not whether it is
 **registered**. For registration status and validity dates you need the API at
 [daichodo.com](https://daichodo.com).
 
-### Sole traders have no check digit
+### Sole traders are not exempt from the check digit
 
-Registration numbers for sole traders are not derived from a 法人番号, so there
-is nothing to verify beyond the format. They are **valid**. Roughly half the
-register is sole traders, so treating them as invalid would reject half of
-everything you look at.
+**Corrected 2026-09-05, by measurement.** Every registration number in the
+register satisfies the check digit — corporations, sole traders and
+人格のない社団等 alike. Counted over the 全件 of 2026-08-31 and the newest
+差分: 5,421,496 numbers, **zero exceptions**.
+
+```ts
+validateRegistrationNumber('T1234567890123');
+// { valid: false, reason: 'check digit is 1, expected 9' }
+```
+
+A sole trader's 13 digits are *not* a 法人番号 — none of 50,000 sampled appear
+in the corporate register — but they come from the same numbering scheme, so
+the check digit holds. **The number alone cannot tell you whether it belongs to
+a corporation or a sole trader.** Only a register lookup can.
+
+Earlier versions returned `valid: true` when the check digit failed, excusing it
+as a sole trader. Since every genuine number passes, that accepted every typo
+and every fabrication instead.
 
 ## ライセンス / Licence
 

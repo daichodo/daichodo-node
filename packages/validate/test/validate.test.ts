@@ -65,13 +65,35 @@ describe('validateRegistrationNumber', () => {
     assert.equal(result.corporateNumber, '1010001153225');
   });
 
-  it('accepts sole traders, which have no check digit', () => {
-    // Roughly half the register. Rejecting these would reject half of
-    // everything a customer looks at.
-    const result = validateRegistrationNumber('T1234567890123');
+  it('applies the check digit to sole traders too', () => {
+    // Measured 2026-09-05 over the whole register: 2,726,018 sole-trader
+    // numbers, 100% pass the check digit. The body is NOT a 法人番号 - none of
+    // 50,000 sampled appear in the corporate register - but it comes from the
+    // same numbering scheme, so the number alone cannot tell you which kind of
+    // entity it belongs to.
+    const result = validateRegistrationNumber('T6000000000011');
     assert.equal(result.valid, true);
-    assert.equal(result.corporateNumber, undefined);
-    assert.match(result.reason ?? '', /法人番号/);
+    assert.equal(result.corporateNumber, '6000000000011');
+  });
+
+  it('rejects a failed check digit instead of excusing it', () => {
+    // The regression this test exists to prevent. These all returned
+    // valid: true before 2026-09-05, excused as "not derived from a 法人番号".
+    // Since every genuine number passes, a failure is a typo or a fabrication.
+    for (const fabricated of ['T1234567890123', 'T6000000000012', 'T0000000000000']) {
+      const result = validateRegistrationNumber(fabricated);
+      assert.equal(result.valid, false, `${fabricated} should be rejected`);
+      assert.match(result.reason ?? '', /check digit/);
+    }
+  });
+
+  it('never becomes more permissive because of the T prefix', () => {
+    // The old bug in one line: isValid('1810000009216') was false while
+    // isValid('T1810000009216') was true, for the same 13 digits.
+    const body = '1810000009216';
+    assert.equal(validateCorporateNumber(body).valid, false);
+    assert.equal(validateRegistrationNumber(`T${body}`).valid, false);
+    assert.equal(isValid(`T${body}`), false);
   });
 
   it('rejects malformed input', () => {

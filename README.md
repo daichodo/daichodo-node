@@ -36,18 +36,20 @@ validateRegistrationNumber('T1010001153225');
 検査用数字の計算式は国税庁が公表している仕様に基づくため、サービスへの接続は不要です。
 判定できるのは**形式として正しいか**であり、**実際に登録されているか**ではありません。
 
-### 個人事業主の登録番号に検査用数字はありません
+### チェックディジットは個人事業主にも適用されます
 
-個人事業主の登録番号は法人番号から導出されないため、形式以外に検証できる要素が
-ありません。
+**2026年9月5日に実測して修正しました。** 全件データ（2026年8月31日）と直近の差分、
+あわせて5,421,496件のうち、法人・個人事業主・人格のない社団等のすべてが
+チェックディジットを満たしました。例外はゼロ件です。
 
 ```ts
 validateRegistrationNumber('T1234567890123');
-// { valid: true, reason: 'not derived from a 法人番号' }
+// { valid: false, reason: 'check digit is 1, expected 9' }
 ```
 
-これらは**有効**です。登録簿の約半数は個人事業主であるため、無効として扱うと確認対象の
-半分を誤って弾くことになります。
+個人事業主の13桁は法人番号ではありません（抽出5万件中、法人番号登録簿に存在した
+ものはゼロ件）が、採番規則が同じためチェックディジットは成立します。したがって
+**番号だけでは法人か個人事業主かを判別できません**。
 
 ### 登録簿を照会する
 
@@ -129,18 +131,21 @@ specification, so this needs no service behind it. It tells you whether a number
 is **well-formed** — not whether it is **registered**. For that you need a
 lookup.
 
-### Sole traders have no check digit
+### Sole traders are not exempt from the check digit
 
-Registration numbers for sole traders (個人事業主) are not derived from a
-法人番号, so there is nothing to verify beyond the format:
+**Corrected 2026-09-05, by measurement.** Every registration number in the
+register satisfies the check digit — 5,421,496 numbers counted across the 全件
+of 2026-08-31 and the newest 差分, zero exceptions:
 
 ```ts
 validateRegistrationNumber('T1234567890123');
-// { value: 'T1234567890123', valid: true, reason: 'not derived from a 法人番号' }
+// { value: 'T1234567890123', valid: false, reason: 'check digit is 1, expected 9' }
 ```
 
-These are **valid**. Roughly half the register is sole traders, so treating them
-as invalid would reject half of everything you look at.
+A sole trader's 13 digits are *not* a 法人番号 — none of 50,000 sampled appear in
+the corporate register — but they come from the same numbering scheme, so the
+check digit holds. **The number alone cannot tell you whether it belongs to a
+corporation or a sole trader.** Only a register lookup can.
 
 ### Look up the register
 

@@ -17,13 +17,14 @@ export interface ValidationResult {
   /** The input, unmodified. */
   value: string;
   valid: boolean;
-  /**
-   * Why it is invalid — or a note qualifying a valid result. A registration
-   * number that is well-formed but not derived from a 法人番号 belongs to a
-   * sole trader: valid, and simply not linked to a corporate number.
-   */
+  /** Why it is invalid. Absent on a valid result. */
   reason?: string;
-  /** The 法人番号 this number corresponds to, when it has one. */
+  /**
+   * The 13-digit body. For a corporation this IS its 法人番号. For a sole
+   * trader it is not, and it will not be found in the corporate register —
+   * both kinds pass the same check digit, so the number alone cannot tell you
+   * which you are holding. Only a register lookup can.
+   */
   corporateNumber?: string;
 }
 
@@ -75,11 +76,33 @@ export function validateCorporateNumber(value: string): ValidationResult {
 /**
  * Validate a 登録番号 (`T` + 13 digits).
  *
- * For corporations the 13 digits are the 法人番号, so the check digit applies.
- * Sole traders are assigned numbers that are not derived from a 法人番号 and
- * carry no verifiable check digit — format is all that can be asserted. Roughly
- * half the register is sole traders, so treating them as invalid would reject
- * half of everything you look at.
+ * **The check digit applies to EVERY registration number, sole traders
+ * included.** Corrected 2026-09-05 after measuring; the previous behaviour
+ * accepted typos.
+ *
+ * This function used to return `valid: true` whenever the check digit failed,
+ * on the premise that sole traders "carry no verifiable check digit". That
+ * premise is false. Measured over the whole invoice register — the 全件 of
+ * 2026-08-31 plus the newest 差分:
+ *
+ *     法人 corporations    2,679,571   100% pass the check digit
+ *     個人 sole traders    2,726,018   100% pass
+ *     人格のない社団等           7,937   100% pass
+ *
+ * Zero exceptions in 5,421,496 numbers. The NTA draws sole-trader numbers from
+ * the same check-digit scheme in a range disjoint from corporate 法人番号 (0 of
+ * 50,000 sampled sole-trader bodies appear in the 法人番号 register), so the
+ * check digit is universal — it just does not tell you which kind of entity you
+ * are holding.
+ *
+ * The old escape hatch protected nothing real and admitted everything fake:
+ * `T1234567890123`, and a one-digit typo of a genuine number, both returned
+ * valid — while the SAME 13 digits without the `T` were correctly rejected.
+ *
+ * `corporateNumber` is the 13-digit body. For a corporation it IS the 法人番号.
+ * For a sole trader it is not, and it will not be found in the corporate
+ * register. **You cannot tell which from the number alone**; only a register
+ * lookup can.
  */
 export function validateRegistrationNumber(value: string): ValidationResult {
   const cleaned = clean(value).toUpperCase();
@@ -89,11 +112,12 @@ export function validateRegistrationNumber(value: string): ValidationResult {
   }
 
   const body = cleaned.slice(1);
-  if (Number(body[0]) === checkDigit(body.slice(1))) {
-    return { value, valid: true, corporateNumber: body };
+  const expected = checkDigit(body.slice(1));
+  if (Number(body[0]) !== expected) {
+    return { value, valid: false, reason: `check digit is ${body[0]}, expected ${expected}` };
   }
 
-  return { value, valid: true, reason: 'not derived from a 法人番号' };
+  return { value, valid: true, corporateNumber: body };
 }
 
 /** True if the value is a well-formed number of either kind. */
