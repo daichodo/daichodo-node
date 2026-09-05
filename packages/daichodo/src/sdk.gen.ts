@@ -81,7 +81,7 @@ export const getInvoiceIssuer = <ThrowOnError extends boolean = false>(options: 
 
 /**
  * Was this registration valid on a given date?
- * Point-in-time validity, answered from the accumulated change log rather than current state. The NTA answers this one entity at a time, on its own uptime; this endpoint answers it from our archive, across a whole counterparty list, under an SLA.
+ * Point-in-time validity, answered from our accumulated change log rather than from current state. The NTA can answer this for one entity on request; this endpoint answers it from our own copy, so it does not depend on the source being reachable. One registration number per call.
  *
  * Requires a paid plan. Works for sole traders as well as corporations: individuals keep every date field, only their identity is stripped.
  */
