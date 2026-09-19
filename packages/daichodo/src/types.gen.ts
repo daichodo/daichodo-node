@@ -23,8 +23,36 @@ export type Corporation = {
     has_gaiji?: boolean;
 };
 
-export type HttpValidationError = {
-    detail?: Array<ValidationError>;
+/**
+ * The only error body this API returns.
+ */
+export type ErrorResponse = {
+    /**
+     * Stable URI identifying the error class
+     */
+    type: string;
+    /**
+     * Stable machine-readable code
+     */
+    code: string;
+    /**
+     * Human-readable explanation. Do not parse this.
+     */
+    message: string;
+    /**
+     * Documentation for this error
+     */
+    doc_url: string;
+    /**
+     * Quote this in a support request
+     */
+    request_id: string;
+    /**
+     * Machine-readable specifics for codes that have them. Keys vary by code and are documented per code; absent entirely when there are none.
+     */
+    details?: {
+        [key: string]: unknown;
+    } | null;
 };
 
 export type Health = {
@@ -99,12 +127,6 @@ export type ValidateResponse = {
     results: Array<ValidationItem>;
 };
 
-export type ValidationError = {
-    loc: Array<string | number>;
-    msg: string;
-    type: string;
-};
-
 export type ValidationItem = {
     /**
      * The number as supplied, unmodified
@@ -140,6 +162,15 @@ export type HealthData = {
     url: '/v1/health';
 };
 
+export type HealthErrors = {
+    /**
+     * An unexpected error on our side (`internal_error`).
+     */
+    500: ErrorResponse;
+};
+
+export type HealthError = HealthErrors[keyof HealthErrors];
+
 export type HealthResponses = {
     /**
      * Successful Response
@@ -155,6 +186,19 @@ export type GetMeData = {
     query?: never;
     url: '/v1/me';
 };
+
+export type GetMeErrors = {
+    /**
+     * API key missing, unknown, or revoked (`unauthorized`).
+     */
+    401: ErrorResponse;
+    /**
+     * An unexpected error on our side (`internal_error`).
+     */
+    500: ErrorResponse;
+};
+
+export type GetMeError = GetMeErrors[keyof GetMeErrors];
 
 export type GetMeResponses = {
     /**
@@ -174,9 +218,13 @@ export type ValidateData = {
 
 export type ValidateErrors = {
     /**
-     * Validation Error
+     * The request itself is malformed (`invalid_request`).
      */
-    422: HttpValidationError;
+    422: ErrorResponse;
+    /**
+     * An unexpected error on our side (`internal_error`).
+     */
+    500: ErrorResponse;
 };
 
 export type ValidateError = ValidateErrors[keyof ValidateErrors];
@@ -201,9 +249,29 @@ export type GetInvoiceIssuerData = {
 
 export type GetInvoiceIssuerErrors = {
     /**
-     * Validation Error
+     * Malformed number (`invalid_number`).
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * API key missing, unknown, or revoked (`unauthorized`).
+     */
+    401: ErrorResponse;
+    /**
+     * Well-formed, and not in the register (`not_found`).
+     */
+    404: ErrorResponse;
+    /**
+     * The request itself is malformed (`invalid_request`).
+     */
+    422: ErrorResponse;
+    /**
+     * `rate_limited` (retryable) or `quota_exceeded` (NOT retryable). Branch on `code`.
+     */
+    429: ErrorResponse;
+    /**
+     * An unexpected error on our side (`internal_error`).
+     */
+    500: ErrorResponse;
 };
 
 export type GetInvoiceIssuerError = GetInvoiceIssuerErrors[keyof GetInvoiceIssuerErrors];
@@ -233,9 +301,33 @@ export type GetValidityData = {
 
 export type GetValidityErrors = {
     /**
-     * Validation Error
+     * Malformed number (`invalid_number`).
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * API key missing, unknown, or revoked (`unauthorized`).
+     */
+    401: ErrorResponse;
+    /**
+     * This key's plan does not include the capability (`plan_required`).
+     */
+    403: ErrorResponse;
+    /**
+     * Well-formed, and not in the register (`not_found`).
+     */
+    404: ErrorResponse;
+    /**
+     * The request itself is malformed (`invalid_request`).
+     */
+    422: ErrorResponse;
+    /**
+     * `rate_limited` (retryable) or `quota_exceeded` (NOT retryable). Branch on `code`.
+     */
+    429: ErrorResponse;
+    /**
+     * An unexpected error on our side (`internal_error`).
+     */
+    500: ErrorResponse;
 };
 
 export type GetValidityError = GetValidityErrors[keyof GetValidityErrors];
@@ -260,9 +352,29 @@ export type GetCorporationData = {
 
 export type GetCorporationErrors = {
     /**
-     * Validation Error
+     * Malformed number (`invalid_number`).
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * API key missing, unknown, or revoked (`unauthorized`).
+     */
+    401: ErrorResponse;
+    /**
+     * Well-formed, and not in the register (`not_found`).
+     */
+    404: ErrorResponse;
+    /**
+     * The request itself is malformed (`invalid_request`).
+     */
+    422: ErrorResponse;
+    /**
+     * `rate_limited` (retryable) or `quota_exceeded` (NOT retryable). Branch on `code`.
+     */
+    429: ErrorResponse;
+    /**
+     * An unexpected error on our side (`internal_error`).
+     */
+    500: ErrorResponse;
 };
 
 export type GetCorporationError = GetCorporationErrors[keyof GetCorporationErrors];
