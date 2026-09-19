@@ -7,15 +7,11 @@ TypeScript client for the [Daichodo](https://daichodo.com) API — Japanese
 qualified invoice issuer (適格請求書発行事業者) and corporate number (法人番号)
 lookup, validation, and point-in-time validity.
 
-> **⚠️ APIキーの発行はまだ一般公開されていません。**
-> API は `https://api.daichodo.com` で稼働していますが、セルフサービスでの
-> APIキー発行は準備中です。ご利用をご希望の場合は
-> [daichodo.com](https://daichodo.com) をご確認ください。
+> **APIキーは [app.daichodo.com](https://app.daichodo.com/ja/) ですぐに発行
+> できます。** 無料プランはカード不要です。
 >
-> **⚠️ API keys are not self-service yet.**
-> The API is live at `https://api.daichodo.com`, but the sign-up dashboard is
-> still being built, so keys are issued manually. See
-> [daichodo.com](https://daichodo.com) to register interest.
+> Create an API key at [app.daichodo.com](https://app.daichodo.com/en/) — free
+> tier, no card, issued instantly.
 >
 > **APIキーが不要な検証だけであれば
 > [`@daichodo/validate`](https://www.npmjs.com/package/@daichodo/validate)
