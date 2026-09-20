@@ -1,10 +1,11 @@
 # daichodo-node
 
-Daichodo（台帳堂）の TypeScript パッケージ。適格請求書発行事業者（インボイス）
-登録番号と法人番号のデータを扱います。
+台帳堂は、日本の公的登録簿のための API です。本リポジトリはその TypeScript
+パッケージで、適格請求書発行事業者（インボイス）登録番号と法人番号のデータを扱います。
 
-TypeScript packages for [Daichodo](https://daichodo.com) — Japanese qualified
-invoice issuer (適格請求書発行事業者) and corporate number (法人番号) data.
+Daichodo is the ledger API for Japanese regulatory registers. These are its
+TypeScript packages — qualified invoice issuer (適格請求書発行事業者) and corporate
+number (法人番号) data.
 
 | パッケージ / Package | 内容 / What it is | APIキー / Needs a key |
 | --- | --- | --- |

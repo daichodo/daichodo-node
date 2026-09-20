@@ -1,11 +1,11 @@
 # daichodo
 
-Daichodo API の TypeScript クライアント。適格請求書発行事業者（インボイス）登録番号と
-法人番号を照会します。
+台帳堂は、日本の公的登録簿のための API です。本パッケージはその TypeScript
+クライアントで、適格請求書発行事業者（インボイス）登録番号と法人番号を照会します。
 
-TypeScript client for the [Daichodo](https://daichodo.com) API — Japanese
-qualified invoice issuer (適格請求書発行事業者) and corporate number (法人番号)
-lookup, validation, and point-in-time validity.
+Daichodo is the ledger API for Japanese regulatory registers. This is its
+TypeScript client — qualified invoice issuer (適格請求書発行事業者) and corporate
+number (法人番号) lookup, validation, and point-in-time validity.
 
 > **APIキーは [app.daichodo.com](https://app.daichodo.com/ja/) ですぐに発行
 > できます。** 無料プランはカード不要です。
