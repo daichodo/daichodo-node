@@ -1,5 +1,11 @@
 # daichodo
 
+> **提供終了 / Discontinued.** Daichodo（台帳堂）は 2026年10月に提供を終了しました。
+> 本パッケージは今後メンテナンスされず、API は停止しています。
+>
+> Daichodo was discontinued in October 2026. This package is no longer
+> maintained and the API is offline.
+
 台帳堂は、日本の公的登録簿のための API です。本パッケージはその TypeScript
 クライアントで、適格請求書発行事業者（インボイス）登録番号と法人番号を照会します。
 

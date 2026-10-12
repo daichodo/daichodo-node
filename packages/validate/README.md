@@ -1,5 +1,13 @@
 # @daichodo/validate
 
+> **提供終了 / Discontinued.** Daichodo（台帳堂）は 2026年10月に提供を終了しました。
+> 本パッケージは今後メンテナンスされません。検証は通信を行わないため引き続き
+> 動作しますが、修正や更新は提供されません。
+>
+> Daichodo was discontinued in October 2026. This package is no longer
+> maintained. Validation is offline and keeps working, but there will be no
+> fixes or updates.
+
 法人番号と適格請求書発行事業者の登録番号を検証します。依存関係なし、通信なし、APIキー不要。
 
 Validate Japanese corporate numbers (法人番号) and qualified invoice
